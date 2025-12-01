@@ -73,14 +73,42 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    // println!("\n=== Part 2 ===");
-    //
-    // fn part2<R: BufRead>(reader: R) -> Result<usize> {
-    //     Ok(0)
-    // }
-    //
-    // assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
-    //
+    println!("\n=== Part 2 ===");
+
+    fn part2<R: BufRead>(reader: R) -> Result<i64> {
+        let mut result = 0;
+        let mut current_distance = 50i64;
+
+        for line in reader.lines() {
+            let line = line.unwrap().into_bytes();
+
+            // println!("{:?}", &String::from_utf8_lossy(&line));
+
+            let direction = line[0];
+
+            let mut distance = 0i64;
+            for digit in line.iter().skip(1) {
+                let digit = digit - b'0';
+                distance = distance * 10 + digit as i64;
+            }
+
+            if direction == b'L' {
+                let reversed = (100 - current_distance) % 100;
+                result += (reversed + distance) / 100;
+                current_distance -= distance as i64;
+            } else {
+                result += (current_distance + distance) / 100;
+                current_distance += distance as i64;
+            }
+
+            current_distance = current_distance.rem_euclid(100);
+        }
+
+        Ok(result)
+    }
+
+    assert_eq!(6, part2(BufReader::new(TEST.as_bytes()))?);
+
     // let input_file = BufReader::new(File::open(INPUT_FILE)?);
     // let result = time_snippet!(part2(input_file)?);
     // println!("Result = {}", result);
