@@ -3,6 +3,9 @@ name = "adv-code-2025"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+tracing = []
+
 [dependencies]
 anyhow = "1.0.100"
 code-timing-macros = { version = "0.0.6", features = ["release"] }
