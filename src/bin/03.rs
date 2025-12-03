@@ -116,13 +116,35 @@ fn main() -> Result<()> {
         for bank in reader.lines() {
             let bank = bank?.into_bytes();
 
-            let mut memo = HashMap::new();
-            let dp = dp(&bank, 0, 12, &mut memo);
+            // monotonically decreasing
+            let mut stack = Vec::new();
+            let mut allowed_to_drop = bank.len() - 12;
 
-            result += dp.parse::<usize>().unwrap();
+            for idx in 0..bank.len() {
+                let cur_battery = (bank[idx] - b'0') as i64;
+
+                while let Some(&top) = stack.last()
+                    && top < cur_battery
+                    && allowed_to_drop > 0
+                {
+                    stack.pop();
+                    allowed_to_drop -= 1;
+                }
+
+                stack.push(cur_battery);
+            }
+
+            stack.truncate(12);
+
+            result += stack
+                .into_iter()
+                .map(|x| char::from_digit(x as u32, 10).unwrap())
+                .collect::<String>()
+                .parse::<usize>()
+                .unwrap();
         }
 
-        Ok(result as usize)
+        Ok(result)
     }
 
     assert_eq!(3121910778619, part2(BufReader::new(TEST.as_bytes()))?);
