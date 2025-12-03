@@ -2,7 +2,7 @@ use adv_code_2025::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -72,63 +72,54 @@ fn main() -> Result<()> {
     //region Part 2
     println!("\n=== Part 2 ===");
 
-    fn backtrack(
+    fn dp(
         bank: &[u8],
-        mut cur: Vec<u8>,
-        result: &mut Vec<Vec<u8>>,
-        mut visited: HashSet<usize>,
-        st: usize,
-    ) {
-        if cur.len() == 12 {
-            result.push(cur);
-            return;
+        idx: usize,
+        amount: usize,
+        memo: &mut HashMap<(usize, usize), String>,
+    ) -> String {
+        if amount == 0 {
+            return String::new();
         }
 
-        for end in st..bank.len() {
-            if !visited.insert(end) {
-                continue;
-            }
+        if idx == bank.len() {
+            return String::new();
+        }
 
-            let battery = bank[end] - b'0';
+        if bank.len() - idx < amount {
+            return String::new();
+        }
 
-            cur.push(battery);
+        if let Some(ret) = memo.get(&(idx, amount)) {
+            return ret.to_string();
+        }
 
-            backtrack(bank, cur.clone(), result, visited.clone(), end + 1);
+        let mut pick = String::new();
+        pick.push(bank[idx] as char);
+        pick.push_str(&dp(bank, idx + 1, amount - 1, memo));
 
-            cur.pop();
-            visited.remove(&end);
+        let leave = dp(bank, idx + 1, amount, memo);
+
+        if pick > leave {
+            memo.insert((idx, amount), pick.clone());
+            pick
+        } else {
+            memo.insert((idx, amount), leave.clone());
+            leave
         }
     }
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        // backtrack
+        // dp pick leave
         let mut result = 0;
 
         for bank in reader.lines() {
             let bank = bank?.into_bytes();
 
-            let mut max_joltage = 0;
-            let mut backtrack_results = Vec::new();
+            let mut memo = HashMap::new();
+            let dp = dp(&bank, 0, 12, &mut memo);
 
-            backtrack(
-                &bank,
-                Vec::with_capacity(12),
-                &mut backtrack_results,
-                HashSet::new(),
-                0,
-            );
-
-            for result in backtrack_results {
-                let result = result
-                    .into_iter()
-                    .map(|x| char::from_digit(x as u32, 10).unwrap())
-                    .collect::<String>()
-                    .parse::<usize>()?;
-                max_joltage = max_joltage.max(result);
-            }
-
-            dbg!(&max_joltage);
-            result += max_joltage;
+            result += dp.parse::<usize>().unwrap();
         }
 
         Ok(result as usize)
