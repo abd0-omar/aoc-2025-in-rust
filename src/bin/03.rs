@@ -2,6 +2,7 @@ use adv_code_2025::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -61,7 +62,7 @@ fn main() -> Result<()> {
     }
 
     assert_eq!(357, part1(BufReader::new(TEST.as_bytes()))?);
-    println!("=== Part 1 sample test end ===");
+    println!("=== Part 1 sample end ===");
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
@@ -69,18 +70,76 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    // println!("\n=== Part 2 ===");
-    //
-    // fn part2<R: BufRead>(reader: R) -> Result<usize> {
-    //     Ok(0)
-    // }
-    //
-    // assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
-    // println!("=== Part 2 sample test end ===");
-    //
-    // let input_file = BufReader::new(File::open(INPUT_FILE)?);
-    // let result = time_snippet!(part2(input_file)?);
-    // println!("Result = {}", result);
+    println!("\n=== Part 2 ===");
+
+    fn backtrack(
+        bank: &[u8],
+        mut cur: Vec<u8>,
+        result: &mut Vec<Vec<u8>>,
+        mut visited: HashSet<usize>,
+        st: usize,
+    ) {
+        if cur.len() == 12 {
+            result.push(cur);
+            return;
+        }
+
+        for end in st..bank.len() {
+            if !visited.insert(end) {
+                continue;
+            }
+
+            let battery = bank[end] - b'0';
+
+            cur.push(battery);
+
+            backtrack(bank, cur.clone(), result, visited.clone(), end + 1);
+
+            cur.pop();
+            visited.remove(&end);
+        }
+    }
+
+    fn part2<R: BufRead>(reader: R) -> Result<usize> {
+        // backtrack
+        let mut result = 0;
+
+        for bank in reader.lines() {
+            let bank = bank?.into_bytes();
+
+            let mut max_joltage = 0;
+            let mut backtrack_results = Vec::new();
+
+            backtrack(
+                &bank,
+                Vec::with_capacity(12),
+                &mut backtrack_results,
+                HashSet::new(),
+                0,
+            );
+
+            for result in backtrack_results {
+                let result = result
+                    .into_iter()
+                    .map(|x| char::from_digit(x as u32, 10).unwrap())
+                    .collect::<String>()
+                    .parse::<usize>()?;
+                max_joltage = max_joltage.max(result);
+            }
+
+            dbg!(&max_joltage);
+            result += max_joltage;
+        }
+
+        Ok(result as usize)
+    }
+
+    assert_eq!(3121910778619, part2(BufReader::new(TEST.as_bytes()))?);
+    println!("=== Part 2 sample end ===");
+
+    let input_file = BufReader::new(File::open(INPUT_FILE)?);
+    let result = time_snippet!(part2(input_file)?);
+    println!("Result = {}", result);
     //endregion
 
     Ok(())
