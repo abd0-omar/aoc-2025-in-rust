@@ -19,11 +19,11 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        todo!()
+        Ok(0)
     }
 
     assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
-    println!("=== Part 1 sample test input end ===");
+    println!("=== Part 1 sample test end ===");
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
@@ -38,6 +38,7 @@ fn main() -> Result<()> {
     // }
     //
     // assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    // println!("=== Part 2 sample test end ===");
     //
     // let input_file = BufReader::new(File::open(INPUT_FILE)?);
     // let result = time_snippet!(part2(input_file)?);

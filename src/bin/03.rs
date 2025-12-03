@@ -2,8 +2,6 @@ use adv_code_2025::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use std::cmp::Reverse;
-use std::collections::{BinaryHeap, HashMap};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -38,43 +36,28 @@ fn main() -> Result<()> {
     // }
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
+        let mut result = 0;
+
         for bank in reader.lines() {
-            let bank = bank?;
+            let bank = bank?.into_bytes();
+            let n = bank.len();
+            let mut max_joltage = 0;
 
-            let mut min_heap = BinaryHeap::new();
-            // overkill, but might need it. premature optimization is the root of all evil
-            let mut idx_map = HashMap::new();
+            // brute-force
+            for i in 0..n {
+                let digit1 = bank[i] - b'0';
+                for j in i + 1..n {
+                    let digit2 = bank[j] - b'0';
 
-            for (idx, battery) in bank.chars().enumerate() {
-                let battery = battery.to_digit(10).unwrap();
-
-                if min_heap.len() < 2 {
-                    min_heap.push(Reverse(battery));
-                    // min_heap.push(BatteryOrder {
-                    //     battery,
-                    //     order: min_heap.len(),
-                    // });
-                    idx_map.insert(battery, idx);
-                    continue;
-                }
-
-                if battery > min_heap.peek().unwrap().0 {
-                    let Reverse(old_battery) = min_heap.pop().unwrap();
-                    min_heap.push(Reverse(battery));
-
-                    idx_map.remove(&old_battery);
-                    idx_map.insert(battery, idx);
+                    let cur_joltage = digit1 * 10 + digit2;
+                    max_joltage = max_joltage.max(cur_joltage);
                 }
             }
 
-            dbg!(min_heap);
-            dbg!(&idx_map);
-
-            // reverse the map, like the way they do it in stakpak agent redaction secrets, but won't need it as a hashmap again
-            let mut idx_battery = idx_map.into_iter().map(|(k, v)| (v, k)).collect::<Vec<_>>();
-            idx_battery.sort_unstable();
+            result += max_joltage as usize;
         }
-        todo!()
+
+        Ok(result)
     }
 
     assert_eq!(357, part1(BufReader::new(TEST.as_bytes()))?);
