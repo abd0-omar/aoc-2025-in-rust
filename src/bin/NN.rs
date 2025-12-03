@@ -19,7 +19,8 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        Ok(0)
+        let result = 0;
+        Ok(result)
     }
 
     assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
