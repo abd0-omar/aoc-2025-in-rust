@@ -24,7 +24,7 @@ fn main() -> Result<()> {
     }
 
     assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
-    println!("=== Part 1 sample test end ===");
+    println!("=== Part 1 sample end ===");
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
@@ -39,7 +39,7 @@ fn main() -> Result<()> {
     // }
     //
     // assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
-    // println!("=== Part 2 sample test end ===");
+    // println!("=== Part 2 sample end ===");
     //
     // let input_file = BufReader::new(File::open(INPUT_FILE)?);
     // let result = time_snippet!(part2(input_file)?);
