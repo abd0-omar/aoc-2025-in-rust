@@ -56,20 +56,18 @@ fn main() -> Result<()> {
                 if graph[i][j] == b'@' {
                     let mut adjacent_paper_rolls = 0;
                     // traverse neighbors
-                    for (di, dj) in [
-                        (0, 1),
-                        (1, 0),
-                        (-1, 0),
-                        (0, -1),
-                        (1, 1),
-                        (-1, -1),
-                        (1, -1),
-                        (-1, 1),
+                    for (ni, nj) in [
+                        (i, j + 1),
+                        (i + 1, j),
+                        (i.wrapping_sub(1), j),
+                        (i, j.wrapping_sub(1)),
+                        (i + 1, j + 1),
+                        (i.wrapping_sub(1), j.wrapping_sub(1)),
+                        (i + 1, j.wrapping_sub(1)),
+                        (i.wrapping_sub(1), j + 1),
                     ] {
-                        let ni = i.wrapping_add(di as usize);
-                        let nj = j.wrapping_add(dj as usize);
-
-                        if !(0..graph.len()).contains(&ni) || !(0..graph[0].len()).contains(&nj) {
+                        // if !(0..graph.len()).contains(&ni) || !(0..graph[0].len()).contains(&nj) {
+                        if ni >= graph.len() || nj >= graph[0].len() {
                             continue;
                         }
 
@@ -135,8 +133,8 @@ fn main() -> Result<()> {
                             let ni = i.wrapping_add(di as usize);
                             let nj = j.wrapping_add(dj as usize);
 
-                            if !(0..graph.len()).contains(&ni) || !(0..graph[0].len()).contains(&nj)
-                            {
+                            // if !(0..graph.len()).contains(&ni) || !(0..graph[0].len()).contains(&nj) {
+                            if ni >= graph.len() || nj >= graph[0].len() {
                                 continue;
                             }
 
