@@ -49,7 +49,7 @@ fn main() -> Result<()> {
             ingredients.push(ingredient);
         }
 
-        dbg!(&ingredients);
+        // dbg!(&ingredients);
 
         Ok((ranges, ingredients))
     }
@@ -92,7 +92,7 @@ fn main() -> Result<()> {
             intervals.push(rang);
         }
 
-        dbg!(&intervals);
+        // dbg!(&intervals);
 
         'outer: for ingredient in ingredients {
             for &inter in ranges.iter() {
@@ -115,18 +115,60 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    // println!("\n=== Part 2 ===");
-    //
-    // fn part2<R: BufRead>(reader: R) -> Result<usize> {
-    //     Ok(0)
-    // }
-    //
-    // assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
-    // println!("=== Part 2 sample end ===");
-    //
-    // let input_file = BufReader::new(File::open(INPUT_FILE)?);
-    // let result = time_snippet!(part2(input_file)?);
-    // println!("Result = {}", result);
+    println!("\n=== Part 2 ===");
+
+    fn part2<R: BufRead>(reader: R) -> Result<usize> {
+        let mut result = 0;
+
+        // ranges
+        // and ranges can overlap
+        // I think part2 would include something of merge intervals
+
+        let (mut ranges, _) = parse(reader)?;
+
+        // any merge intervals starts with sorting
+        ranges.sort_unstable();
+
+        let mut intervals = vec![ranges[0]];
+
+        // 3-5
+        // 10-14
+        // 12-18
+        // 16-20
+
+        // 3-5
+        // 10-18
+        // 16-20
+
+        // 3-5
+        // 10-20
+
+        for &rang in ranges.iter().skip(1) {
+            // merge if they touch or adjacent
+            if intervals.last().unwrap().1 + 1 >= rang.0 {
+                // there is an overlap
+                let (st, end) = intervals.pop().unwrap();
+                intervals.push((st, rang.1.max(end)));
+                continue;
+            }
+
+            intervals.push(rang);
+        }
+
+        dbg!(&intervals);
+
+        for inter in intervals {
+            result += (inter.0..=inter.1).count();
+        }
+
+        Ok(result)
+    }
+    assert_eq!(14, part2(BufReader::new(TEST.as_bytes()))?);
+    println!("=== Part 2 sample end ===");
+
+    let input_file = BufReader::new(File::open(INPUT_FILE)?);
+    let result = time_snippet!(part2(input_file)?);
+    println!("Result = {}", result);
     //endregion
 
     Ok(())
