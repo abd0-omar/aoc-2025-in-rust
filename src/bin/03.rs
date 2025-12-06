@@ -2,7 +2,7 @@ use adv_code_2025::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -72,7 +72,7 @@ fn main() -> Result<()> {
     //region Part 2
     println!("\n=== Part 2 ===");
 
-    fn dp(
+    fn _dp(
         bank: &[u8],
         idx: usize,
         amount: usize,
@@ -96,9 +96,9 @@ fn main() -> Result<()> {
 
         let mut pick = String::new();
         pick.push(bank[idx] as char);
-        pick.push_str(&dp(bank, idx + 1, amount - 1, memo));
+        pick.push_str(&_dp(bank, idx + 1, amount - 1, memo));
 
-        let leave = dp(bank, idx + 1, amount, memo);
+        let leave = _dp(bank, idx + 1, amount, memo);
 
         if pick > leave {
             memo.insert((idx, amount), pick.clone());

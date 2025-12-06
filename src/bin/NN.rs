@@ -18,7 +18,7 @@ fn main() -> Result<()> {
     //region Part 1
     println!("=== Part 1 ===");
 
-    fn part1<R: BufRead>(reader: R) -> Result<usize> {
+    fn part1<R: BufRead>(_reader: R) -> Result<usize> {
         let result = 0;
         Ok(result)
     }
