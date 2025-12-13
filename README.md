@@ -1,3 +1,6 @@
+
+![msedge_ZxEe5LQi8q](https://github.com/user-attachments/assets/2fe0567f-30b0-4875-9e77-8530136dd447)
+
 # Template for solving Advent of Code puzzles in Rust with RustRover
 
 Read the [blog post](https://blog.jetbrains.com/rust/2024/11/29/advent-of-code-in-rust-for-the-rest-of-us/) that explains the structure and rationale behind this template.
